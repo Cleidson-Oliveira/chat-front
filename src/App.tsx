@@ -1,7 +1,12 @@
+import { globalStyles } from "./style/global";
+import { Chat } from "./pages/chat";
+
 export function App() {
+  globalStyles();
+  
   return (
     <div>
-      <h1>hello world</h1>
+      <Chat />
     </div>
   )
 }
