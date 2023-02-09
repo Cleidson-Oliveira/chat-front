@@ -1,75 +1,25 @@
-import { ChatConteiner, ChatHeader, Messages, FriendInfo, FormMsg } from "./style";
-import { Message } from "../../components/message";
-
+import { FormEvent, useCallback, useContext, useMemo, useState } from "react";
+import { Link, useParams } from 'react-router-dom';
 import { X } from "phosphor-react";
+import { ChatContext } from "../../context/chat";
+import { Message } from "../../components/message";
 import { Input } from "../../components/input";
-import { FormEvent, useState } from "react";
+import { ChatConteiner, ChatHeader, Messages, FriendInfo, FormMsg, StateInfo } from "./style";
 
-interface ChatProps {}
-
-export function Chat (props: ChatProps) {
-
-    const username = "Test"
-
-    const dataMsgs = [
-        {
-            name: "Cleidson",
-            date: "11:30",
-            message: "Tive uma ideia incrível"
-        },
-        {
-            name: "Cleidson",
-            date: "11:30",
-            message: "para um projeto! 😍"
-        },
-        {
-            name: "Test",
-            date: "11:32",
-            message: "Sério? Me conta mais."
-        },
-        {
-            name: "Cleidson",
-            date: "11:34",
-            message: "E se a gente fizesse um chat moderno e responsivo em apenas uma semana?"
-        },
-        {
-            name: "Test",
-            date: "11:36",
-            message: "#boraCodar! 🚀"
-        },
-        {
-            name: "Cleidson",
-            date: "11:30",
-            message: "Tive uma ideia incrível para um projeto! 😍"
-        },
-        {
-            name: "Test",
-            date: "11:32",
-            message: "Sério? Me conta mais."
-        },
-        {
-            name: "Cleidson",
-            date: "11:34",
-            message: "E se a gente fizesse um chat moderno e responsivo em apenas uma semana?"
-        },
-        {
-            name: "Test",
-            date: "11:36",
-            message: "#boraCodar! 🚀"
-        },
-        {
-            name: "Cleidson",
-            date: "11:38",
-            message: "vamo!"
-        },
-    ]
-
-    const [ dataMsg, setDataMsg ] = useState(dataMsgs);
+export function Chat () {
     const [ msg, setMsg ] = useState("");
+    const { id } = useParams();
+    const { sendMessage, messages, users } = useContext(ChatContext);
+
+    const contact = useMemo(() => users.find(user => user.id === id), [])
+    const contactIsOnline = users.some(user => user.id === id);
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        setDataMsg(prevState => [{name: username, message: msg, date: "11:00"}, ...prevState]);
+        
+        if(!msg.trim()) return;
+
+        sendMessage(msg, id!)
         setMsg("");
     }
 
@@ -78,27 +28,36 @@ export function Chat (props: ChatProps) {
 
             <ChatHeader>
                 <FriendInfo>
-                    <img src="https://avatars.githubusercontent.com/u/81466026?v=4" />
+                    {/* <img src="https://avatars.githubusercontent.com/u/81466026?v=4" /> */}
+                    <img src="https://i.stack.imgur.com/frlIf.png" />
                     <div>
-                        <h2>Cleidson</h2>
-                        <span>Online</span>
+                        <h2>{contact?.name}</h2>
+                        <StateInfo state={contactIsOnline ? "online" : "offline"}>
+                            {contactIsOnline ? "Online" : "Offline"}
+                        </StateInfo>
                     </div>
                 </FriendInfo>
                 <div>
-                    <X size={20} weight="light" color="white" />
+                    <Link to={"/"}>
+                        <X size={20} weight="light" color="white" />
+                    </Link>
                 </div>
             </ChatHeader>
             
             <Messages>
-                { dataMsg.map((data, i) => (
-                    <Message
-                        date={data.date}
-                        isMine={data.name === username}
-                        message={data.message}
-                        name={data.name}
-                        key={i}
-                    />
-                ))}
+                { messages.map((data, i) => {
+
+                    const canShowMessage = data.from == contact?.name || data.to == contact?.id;
+                    
+                    return canShowMessage && (
+                        <Message
+                            date={data.date}
+                            message={data.message}
+                            name={data.from}
+                            key={i}
+                        />
+                    )})
+                }
             </Messages>
             <FormMsg onSubmit={handleSubmit}>
                 <Input

@@ -48,21 +48,39 @@ export const FriendInfo = styled("div", {
         fontSize: 16,
         fontWeight: "bold",
         color: "white",
+    }
+})
+
+export const StateInfo = styled("span", {
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    fontSize: 12,
+    
+    "&::before": {
+        content: "",
+        width: 10,
+        height: 10,
+        borderRadius: "50%"
     },
+    
+    variants: {
+        state: {
+            online: {
+                color: "#00B37E",
+                
+                "&::before": {
+                    backgroundColor: "#00B37E",
+                }
+                
+            },
+            offline: {
+                color: "red",
 
-    "& span": {
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        color: "#00B37E",
-        fontSize: 12,
-
-        "&::before": {
-            content: "",
-            width: 10,
-            height: 10,
-            backgroundColor: "#00B37E",
-            borderRadius: "50%"
+                "&::before": {
+                    backgroundColor: "red",
+                }
+            }
         }
     }
 })
